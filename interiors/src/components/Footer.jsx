@@ -1,5 +1,7 @@
 import { business } from "../data/business";
 
+const currentYear = new Date().getFullYear();
+
 export default function Footer() {
   return (
     <footer className="site-footer">
@@ -27,7 +29,7 @@ export default function Footer() {
 
         <div className="footer-bottom">
           <p>
-            © {new Date().getFullYear()} {business.name}. Demo website.
+            © {currentYear} {business.name}.
           </p>
 
           <a
@@ -35,7 +37,7 @@ export default function Footer() {
             target="_blank"
             rel="noreferrer"
           >
-            Demo photography: Unsplash
+            Stock photography: Unsplash
           </a>
         </div>
       </div>

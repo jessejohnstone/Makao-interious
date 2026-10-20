@@ -1,4 +1,4 @@
-export default function ServiceCard({ service }) {
+export default function ServiceCard({ service, onSelectService }) {
   return (
     <article className="service-card">
       <div className="service-card-top">
@@ -18,6 +18,7 @@ export default function ServiceCard({ service }) {
       <a
         className="text-link"
         href="#contact"
+        onClick={() => onSelectService(service.title)}
         aria-label={`Request a quotation for ${service.title}`}
       >
         Request a quotation

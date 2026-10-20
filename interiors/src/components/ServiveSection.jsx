@@ -1,7 +1,7 @@
 import ServiceCard from "./ServiceCard";
 import { services } from "../data/business";
 
-export default function ServicesSection() {
+export default function ServicesSection({ onSelectService }) {
   return (
     <section
       className="section services-section"
@@ -23,8 +23,8 @@ export default function ServicesSection() {
           </div>
 
           <p>
-            Explore our sample service offering. Final services
-            and quotations will be confirmed by the designer.
+            Explore interior design services for homes and businesses.
+            Project scope and pricing are confirmed with the designer.
           </p>
         </div>
 
@@ -33,6 +33,7 @@ export default function ServicesSection() {
             <ServiceCard
               key={service.number}
               service={service}
+              onSelectService={onSelectService}
             />
           ))}
         </div>

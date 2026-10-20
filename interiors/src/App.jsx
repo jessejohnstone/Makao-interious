@@ -1,15 +1,16 @@
+
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import ServicesSection from "./components/ServiveSection";
 import ProjectGallery from "./components/projectGallery";
 import EnquiryForm from "./components/EnquiryForm";
-import Footer from "./components/Footer";
 import FAQ from "./components/FAQ";
+import Footer from "./components/Footer";
 import WhatsAppButton from "./components/WhatsappButton";
 
-import { business, services } from "./data/business";
-const heroImage =
-  "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1800&q=85";
+import { business } from "./data/business";
+import BackToTop from "./components/BackToTop";
+import { useState } from "react";
 
 const aboutImage =
   "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1000&q=80";
@@ -33,77 +34,27 @@ const steps = [
 ];
 
 export default function App() {
+  const [serviceRequest, setServiceRequest] = useState(null);
+
+  function handleSelectService(service) {
+    setServiceRequest({ service });
+  }
+
   return (
     <>
       <a className="skip-link" href="#main">
         Skip to content
       </a>
 
-      <div className="demo-banner">
-        Demonstration website · Sample concepts and stock photography
+      <div className="disclosure-banner">
+        Interior design inspiration · Stock photography
       </div>
 
       <Navbar />
 
       <main id="main">
         {/* HOME */}
-        <section
-          className="hero"
-          id="home"
-          aria-labelledby="hero-title"
-        >
-          <img
-            className="hero-image"
-            src={heroImage}
-            alt="Light-filled living room with comfortable neutral seating"
-            width="1800"
-            height="1200"
-            fetchPriority="high"
-          />
-
-          <div className="hero-shade" aria-hidden="true" />
-
-          <div className="container hero-content">
-            <span className="eyebrow light">
-              {business.name.toUpperCase()} · KENYA
-            </span>
-
-            <h1 id="hero-title">
-              A space that
-              <br />
-              feels like <em>you.</em>
-            </h1>
-
-            <p>
-              Thoughtful interiors for the way you live and work.
-              Discover a warmer, more considered approach to your space.
-            </p>
-
-            <div className="hero-actions">
-              <a
-                className="button button-cream"
-                href="#projects"
-              >
-                Explore our concepts
-                <span aria-hidden="true">↗</span>
-              </a>
-
-              <a className="hero-link" href="#contact">
-                Let’s discuss your space
-                <span aria-hidden="true"> →</span>
-              </a>
-            </div>
-          </div>
-
-          <div className="hero-caption">
-            <span>COMFORT. CHARACTER. CONNECTION.</span>
-
-            <a href="#about">
-              Scroll to discover
-              <span aria-hidden="true"> ↓</span>
-            </a>
-          </div>
-        </section>
+        <Hero />
 
         {/* INTRODUCTION STRIP */}
         <div className="intro-strip">
@@ -149,9 +100,9 @@ export default function App() {
 
               <p>
                 A beautiful space should also work for the people
-                who use it. Our demo introduces an approach rooted
-                in thoughtful layouts, natural textures, and the
-                details that make a room feel personal.
+                who use it. We bring together thoughtful layouts,
+                natural textures, and personal details to create
+                spaces that feel considered and comfortable.
               </p>
 
               <p>
@@ -178,8 +129,8 @@ export default function App() {
               </div>
 
               <p className="small-muted">
-                Demo brand story. The buyer’s introduction, team,
-                experience, and service areas will replace this content.
+                Every project begins with an understanding of the
+                people, routines, and priorities that shape a space.
               </p>
 
               <a className="text-link" href="#contact">
@@ -191,63 +142,7 @@ export default function App() {
         </section>
 
         {/* SERVICES */}
-        <section
-          className="section services-section"
-          id="services"
-          aria-labelledby="services-heading"
-        >
-          <div className="container">
-            <div className="section-heading">
-              <div>
-                <span className="eyebrow">
-                  WHAT WE CAN EXPLORE
-                </span>
-
-                <h2 id="services-heading">
-                  Your space.
-                  <br />
-                  <em>New possibilities.</em>
-                </h2>
-              </div>
-
-              <p>
-                Explore our sample service offering. Final services
-                and quotations will be confirmed by the designer.
-              </p>
-            </div>
-
-            <div className="services-grid">
-              {services.map((service) => (
-                <article
-                  className="service-card"
-                  key={service.number}
-                >
-                  <div className="service-card-top">
-                    <span
-                      className="service-icon"
-                      aria-hidden="true"
-                    >
-                      {service.icon}
-                    </span>
-
-                    <span className="service-number">
-                      {service.number}
-                    </span>
-                  </div>
-
-                  <h3>{service.title}</h3>
-
-                  <p>{service.description}</p>
-
-                  <a className="text-link" href="#contact">
-                    Request a quotation
-                    <span aria-hidden="true">↗</span>
-                  </a>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
+        <ServicesSection onSelectService={handleSelectService} />
 
         {/* PROJECTS */}
         <section
@@ -270,12 +165,13 @@ export default function App() {
               </div>
 
               <p>
-                Illustrative concepts using stock photography.
-                These images do not represent completed client work.
+                Explore interior design inspiration. The photographs are
+                stock images and do not show completed client projects.
               </p>
             </div>
 
-            <ProjectGallery />
+            
+            <ProjectGallery onSelectService={handleSelectService} />
           </div>
         </section>
 
@@ -298,7 +194,7 @@ export default function App() {
               </h2>
 
               <p>
-                Proposed process — subject to the designer’s confirmation.
+                Each project is planned around your space, priorities, and agreed scope.
               </p>
             </div>
 
@@ -309,7 +205,7 @@ export default function App() {
                   key={step.title}
                 >
                   <span className="step-number">
-                    0{index + 1}
+                    {String(index + 1).padStart(2, "0")}
                   </span>
 
                   <h3>{step.title}</h3>
@@ -363,7 +259,7 @@ export default function App() {
                       {business.email}
                     </a>
                   ) : (
-                    <p>Designer’s email to be added</p>
+                    <p>Email details are currently unavailable.</p>
                   )}
                 </div>
 
@@ -372,21 +268,18 @@ export default function App() {
 
                   {business.phone ? (
                     <a
-                      href={`tel:${business.phone.replace(
-                        /\s/g,
-                        ""
-                      )}`}
+                      href={`tel:${business.phone.replace(/\s/g, "")}`}
                     >
                       {business.phone}
                     </a>
                   ) : (
-                    <p>Designer’s phone to be added</p>
+                    <p>Phone details are currently unavailable.</p>
                   )}
                 </div>
               </div>
             </div>
 
-            <EnquiryForm />
+            <EnquiryForm serviceRequest={serviceRequest} />
           </div>
         </section>
       </main>
@@ -394,6 +287,9 @@ export default function App() {
       <Footer />
 
       <WhatsAppButton />
+
+     <BackToTop />
+
     </>
   );
 }

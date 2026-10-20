@@ -1,22 +1,61 @@
 import { useEffect, useRef, useState } from "react";
+import ProjectImage from "./ProjectImage";
 import { projects } from "../data/business";
 
-const filters = ["All", "Residential", "Commercial", "Styling"];
+const filters = [
+  "All",
+  "Residential",
+  "Commercial",
+  "Styling",
+];
 
-export default function ProjectGallery() {
+const categoryServices = {
+  Residential: "Residential interiors",
+  Commercial: "Commercial spaces",
+  Styling: "Styling & decoration",
+};
+
+export default function ProjectGallery({ onSelectService }) {
   const [filter, setFilter] = useState("All");
-  const [selected, setSelected] = useState(null);
+  const [search, setSearch] = useState("");
+  const [selectedId, setSelectedId] = useState(null);
 
   const dialogRef = useRef(null);
   const triggerRef = useRef(null);
+  const moveToContactRef = useRef(false);
 
-  const visibleProjects =
-    filter === "All"
-      ? projects
-      : projects.filter((project) => project.category === filter);
+  const query = search.trim().toLowerCase();
 
+  const visibleProjects = projects.filter((project) => {
+    const matchesCategory =
+      filter === "All" || project.category === filter;
+
+    const searchableText = [
+      project.title,
+      project.category,
+      project.subtitle,
+      project.brief,
+      project.solution,
+    ]
+      .join(" ")
+      .toLowerCase();
+
+    const matchesSearch = searchableText.includes(query);
+
+    return matchesCategory && matchesSearch;
+  });
+
+  const selectedIndex = visibleProjects.findIndex(
+    (project) => project.id === selectedId
+  );
+
+  const selected = visibleProjects[selectedIndex];
+  const isOpen = selectedId !== null;
+  const canNavigate = visibleProjects.length > 1;
+
+  // Open the viewer and prevent the background from scrolling.
   useEffect(() => {
-    if (!selected) return;
+    if (!isOpen) return;
 
     const dialog = dialogRef.current;
 
@@ -30,26 +69,144 @@ export default function ProjectGallery() {
     return () => {
       document.body.style.overflow = previousOverflow;
     };
-  }, [selected]);
+  }, [isOpen]);
 
   function openProject(project, event) {
     triggerRef.current = event.currentTarget;
-    setSelected(project);
+    moveToContactRef.current = false;
+    setSelectedId(project.id);
   }
 
   function closeProject() {
     dialogRef.current?.close();
   }
 
+  function handleDialogClose() {
+    setSelectedId(null);
+
+    if (moveToContactRef.current) {
+      moveToContactRef.current = false;
+
+      requestAnimationFrame(() => {
+        window.location.hash = "contact";
+
+        document.getElementById("name")?.focus({
+          preventScroll: true,
+        });
+      });
+
+      return;
+    }
+
+    triggerRef.current?.focus({
+      preventScroll: true,
+    });
+  }
+
+  function navigateProject(direction) {
+    if (!canNavigate || selectedIndex < 0) return;
+
+    const nextIndex =
+      (selectedIndex + direction + visibleProjects.length) %
+      visibleProjects.length;
+
+    setSelectedId(visibleProjects[nextIndex].id);
+
+    if (dialogRef.current) {
+      dialogRef.current.scrollTop = 0;
+    }
+  }
+
+  function handleViewerKeyDown(event) {
+    // Preserve normal keyboard behaviour within controls.
+    if (
+      event.target.closest(
+        "button, a, input, textarea, select"
+      )
+    ) {
+      return;
+    }
+
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      navigateProject(1);
+    }
+
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      navigateProject(-1);
+    }
+  }
+
+  function discussProject() {
+    if (!selected) return;
+
+    const service = categoryServices[selected.category];
+
+    if (service) {
+      onSelectService?.(service);
+    }
+
+    moveToContactRef.current = true;
+    closeProject();
+  }
+
+  function clearSearch() {
+    setSearch("");
+    document.getElementById("project-search")?.focus();
+  }
+
+  function resetFilters() {
+    setSearch("");
+    setFilter("All");
+    document.getElementById("project-search")?.focus();
+  }
+
   return (
     <>
-      <div className="project-filters" aria-label="Filter projects">
+      {/* PROJECT SEARCH */}
+      <div className="project-search">
+        <label htmlFor="project-search">
+          Find inspiration
+        </label>
+
+        <div className="project-search-controls">
+          <input
+            id="project-search"
+            type="search"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Search living rooms, offices, textures…"
+            aria-controls="project-results"
+            maxLength={100}
+          />
+
+          {search && (
+            <button
+              type="button"
+              onClick={clearSearch}
+            >
+              Clear
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* CATEGORY FILTERS */}
+      <div
+        className="project-filters"
+        role="group"
+        aria-label="Filter projects by category"
+      >
         {filters.map((item) => (
           <button
             key={item}
-            className={filter === item ? "filter active" : "filter"}
+            className={
+              filter === item ? "filter active" : "filter"
+            }
             type="button"
             aria-pressed={filter === item}
+            aria-controls="project-results"
             onClick={() => setFilter(item)}
           >
             {item}
@@ -57,47 +214,86 @@ export default function ProjectGallery() {
         ))}
       </div>
 
-      <div className="project-grid">
-        {visibleProjects.map((project) => (
-          <button
-            key={project.id}
-            className="project-card"
-            type="button"
-            onClick={(event) => openProject(project, event)}
-            aria-label={`View ${project.title}, demonstration concept`}
-          >
-            <div className="project-image">
-              <img
-                src={project.image}
-                alt={project.alt}
-                loading="lazy"
-                width="1200"
-                height="900"
-              />
+      {/* RESULTS COUNT */}
+      <p className="small-muted" role="status" aria-atomic="true">
+        Showing {visibleProjects.length}{" "}
+        {visibleProjects.length === 1 ? "concept" : "concepts"}
+      </p>
 
-              <span className="project-badge">Demo concept</span>
-              <span className="project-arrow" aria-hidden="true">
-                ↗
-              </span>
-            </div>
+      <div id="project-results">
+        {/* EMPTY RESULTS */}
+        {visibleProjects.length === 0 && (
+          <div className="project-empty">
+            <h3>No matching concepts</h3>
 
-            <div className="project-information">
-              <span className="eyebrow">{project.category}</span>
-              <h3>{project.title}</h3>
-              <p>{project.subtitle}</p>
-            </div>
-          </button>
-        ))}
+            <p>
+              Try another search or reset the filters to explore
+              all concepts.
+            </p>
+
+            <button
+              className="button button-outline"
+              type="button"
+              onClick={resetFilters}
+            >
+              Show all concepts
+            </button>
+          </div>
+        )}
+
+        {/* PROJECT CARDS */}
+        <div className="project-grid">
+          {visibleProjects.map((project) => (
+            <button
+              key={project.id}
+              className="project-card"
+              type="button"
+              aria-haspopup="dialog"
+              aria-label={`View ${project.title}`}
+              onClick={(event) => openProject(project, event)}
+            >
+              <div className="project-image">
+                <img
+                  src={project.image}
+                  alt={project.alt}
+                  loading="lazy"
+                  width="1200"
+                  height="900"
+                />
+
+                <span className="project-badge">
+                  Stock image
+                </span>
+
+                <span
+                  className="project-arrow"
+                  aria-hidden="true"
+                >
+                  ↗
+                </span>
+              </div>
+
+              <div className="project-information">
+                <span className="eyebrow">
+                  {project.category}
+                </span>
+
+                <h3>{project.title}</h3>
+
+                <p>{project.subtitle}</p>
+              </div>
+            </button>
+          ))}
+        </div>
       </div>
 
+      {/* PROJECT VIEWER */}
       <dialog
         ref={dialogRef}
         className="project-dialog"
         aria-labelledby="project-dialog-title"
-        onClose={() => {
-          setSelected(null);
-          triggerRef.current?.focus();
-        }}
+        onClose={handleDialogClose}
+        onKeyDown={handleViewerKeyDown}
         onClick={(event) => {
           if (event.target === event.currentTarget) {
             closeProject();
@@ -116,14 +312,58 @@ export default function ProjectGallery() {
               ✕
             </button>
 
-            <img src={selected.image} alt={selected.alt} />
+            <ProjectImage
+              key={selected.id}
+              src={selected.image}
+              alt={selected.alt}
+              loading="eager"
+            />
 
             <div className="dialog-content">
+              {/* PREVIOUS AND NEXT CONTROLS */}
+              <div className="viewer-navigation">
+                <button
+                  className="viewer-nav-button"
+                  type="button"
+                  disabled={!canNavigate}
+                  onClick={() => navigateProject(-1)}
+                  aria-label="View previous concept"
+                >
+                  ← Previous
+                </button>
+
+                <span
+                  className="viewer-counter"
+                  role="status"
+                  aria-atomic="true"
+                >
+                  {selectedIndex + 1} of{" "}
+                  {visibleProjects.length}
+
+                  <span className="sr-only">
+                    {`: ${selected.title}`}
+                  </span>
+                </span>
+
+                <button
+                  className="viewer-nav-button"
+                  type="button"
+                  disabled={!canNavigate}
+                  onClick={() => navigateProject(1)}
+                  aria-label="View next concept"
+                >
+                  Next →
+                </button>
+              </div>
+
+              {/* PROJECT DETAILS */}
               <span className="eyebrow">
-                {selected.category} · Demonstration concept
+                {selected.category}
               </span>
 
-              <h2 id="project-dialog-title">{selected.title}</h2>
+              <h2 id="project-dialog-title">
+                {selected.title}
+              </h2>
 
               <h3>The brief</h3>
               <p>{selected.brief}</p>
@@ -132,17 +372,19 @@ export default function ProjectGallery() {
               <p>{selected.solution}</p>
 
               <p className="notice">
-                Stock photograph used for inspiration. This is not a completed
-                Makao Interiors client project.
+                Stock photograph used for inspiration.
+                This is not a completed Makao Interiors
+                client project.
               </p>
 
-              <a
+              <button
                 className="button"
-                href="#contact"
-                onClick={closeProject}
+                type="button"
+                onClick={discussProject}
               >
-                Discuss your space <span aria-hidden="true">↗</span>
-              </a>
+                Discuss a similar project
+                <span aria-hidden="true">↗</span>
+              </button>
             </div>
           </article>
         )}

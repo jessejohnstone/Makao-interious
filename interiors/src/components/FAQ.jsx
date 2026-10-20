@@ -18,7 +18,7 @@ export default function FAQ() {
           </h2>
 
           <p className="small-muted">
-            Draft answers for demonstration purposes.
+            Find guidance on planning, pricing, and preparing for a project.
           </p>
 
           <a className="text-link" href="#contact">

@@ -1,12 +1,24 @@
+// BUSINESS INFORMATION
+// Add real contact details before enabling enquiries.
+
 export const business = {
   name: "Makao Interiors",
   tagline: "Thoughtful spaces. Inspired living.",
-  email: "",
-  // Digits only, including country code, for example: 2547XXXXXXXX
-  whatsapp: "",
-  phone: "",
-  serviceArea: "Service areas to be confirmed with the designer",
+
+  email: "jessejohnstone203@gmail.com",
+
+  // International format, digits only.
+  // For a Kenyan number, replace the starting 0 with 254.
+  whatsapp: "254702732396",
+
+  // The phone number as you want visitors to see it.
+  phone: "0702732396",
+
+  serviceArea: "Ask the designer to confirm availability in your area",
 };
+
+// SERVICES
+// Confirm the services offered by the studio before launch.
 
 export const services = [
   {
@@ -39,6 +51,10 @@ export const services = [
   },
 ];
 
+// PROJECTS
+// These concepts use stock photographs.
+// They do not represent completed Makao Interiors client projects.
+
 export const projects = [
   {
     id: "quiet-living",
@@ -47,9 +63,10 @@ export const projects = [
     subtitle: "Warm textures · Natural light",
     image:
       "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=80",
-    alt: "Bright living room with neutral furniture and warm wood accents",
+    alt:
+      "Bright living room with neutral furniture and warm wood accents",
     brief:
-      "An illustrative brief for a calm living room with comfortable seating and a natural palette.",
+      "A calm living room with comfortable seating and a natural palette.",
     solution:
       "This concept explores layered textures, soft furnishings, and an open arrangement that welcomes conversation.",
   },
@@ -60,9 +77,10 @@ export const projects = [
     subtitle: "Soft neutrals · Everyday comfort",
     image:
       "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=80",
-    alt: "Contemporary interior with neutral finishes and carefully arranged furniture",
+    alt:
+      "Contemporary interior with neutral finishes and carefully arranged furniture",
     brief:
-      "An illustrative styling brief for a welcoming home with a cohesive, understated appearance.",
+      "A welcoming home with a cohesive, understated appearance.",
     solution:
       "This concept uses a restrained colour palette, balanced proportions, and practical furniture choices.",
   },
@@ -73,24 +91,28 @@ export const projects = [
     subtitle: "Open layouts · Room to collaborate",
     image:
       "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1200&q=80",
-    alt: "Open office interior with shared workspaces and natural light",
+    alt:
+      "Open office interior with shared workspaces and natural light",
     brief:
-      "An illustrative office brief balancing focused work with informal collaboration.",
+      "An office that balances focused work with informal collaboration.",
     solution:
       "This concept explores shared work zones, clear circulation, and bright communal spaces.",
   },
 ];
 
+// FREQUENTLY ASKED QUESTIONS
+// General guidance; project details are agreed individually.
+
 export const faqs = [
   {
     question: "How does the design process work?",
     answer:
-      "Draft process: start with an enquiry, discuss your space and goals, then agree on a proposal before design work begins. The designer will confirm the final process.",
+      "A project typically begins with an enquiry and a conversation about your space and goals. The stages and deliverables are agreed before work begins.",
   },
   {
     question: "How much does a project cost?",
     answer:
-      "Pricing depends on the space, services, materials, and agreed scope. Request a quotation. Prices and consultation fees must be confirmed by the designer.",
+      "Pricing depends on the space, services, materials, and agreed scope. Request a proposal for project pricing, and ask the designer about any consultation fees before booking.",
   },
   {
     question: "Can you work with my existing furniture?",
@@ -100,6 +122,16 @@ export const faqs = [
   {
     question: "Which locations do you serve?",
     answer:
-      "Service locations and any travel charges will be added when this demonstration is customised for a designer.",
+      "Service availability and any travel charges are discussed before a project is agreed.",
+  },
+  {
+    question: "How long does an interior design project take?",
+    answer:
+      "Timelines depend on the project scope, approvals, material availability, and any installation work. An estimated schedule is provided with the proposal.",
+  },
+  {
+    question: "Are consultations charged?",
+    answer:
+      "Please ask the designer whether a consultation fee applies before booking.",
   },
 ];
